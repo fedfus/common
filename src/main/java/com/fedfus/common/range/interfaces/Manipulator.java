@@ -3,6 +3,8 @@
  */
 package com.fedfus.common.range.interfaces;
 
+import java.util.function.Function;
+
 /**
  * @author F.Fusto - 15 giu 2018
  * 
@@ -11,6 +13,7 @@ package com.fedfus.common.range.interfaces;
  *
  */
 public interface Manipulator<T> {
+
 	/**
 	 * @param input
 	 * @return input incrementato
@@ -22,4 +25,27 @@ public interface Manipulator<T> {
 	 * @return input decrementato
 	 */
 	public T decrease(T input);
+
+	/**
+	 * @param increase
+	 *            function
+	 * @param decrease
+	 *            function
+	 * @return
+	 */
+	public static <M> Manipulator<M> of(Function<M, M> increase, Function<M, M> decrease) {
+		return new Manipulator<M>() {
+
+			@Override
+			public M increase(M input) {
+				return increase.apply(input);
+			}
+
+			@Override
+			public M decrease(M input) {
+				return decrease.apply(input);
+			}
+		};
+
+	}
 }

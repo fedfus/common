@@ -16,34 +16,39 @@ import com.fedfus.common.range.interfaces.Manipulator;
  * @author F.Fusto - 14 giu 2018
  *
  */
-public class RangeUtils<T extends Comparable<T>> {
+public class RangeUtils<T> {
 
 	private TreeSet<Range<T>> rangeList;
 	private Manipulator<T> manipulator;
+	private Comparator<T> comparator;
 
 	/**
 	 * @param manipulator
 	 */
-	private RangeUtils(Manipulator<T> manipulator) {
+	private RangeUtils(Manipulator<T> manipulator, Comparator<T> comparator) {
 		this.manipulator = manipulator;
-		rangeList = new TreeSet<>((o1, o2) -> o1.getComparator().compare(o1.getMinimum(), o2.getMinimum()));
+		this.comparator = comparator;
+		rangeList = new TreeSet<>((o1, o2) -> this.comparator.compare(o1.getMinimum(), o2.getMinimum()));
 	}
 
 	/**
-	 * @param simple      range
+	 * @param simple
+	 *            range
 	 * @param manipulator
 	 */
 	public RangeUtils(Range<T> range, Manipulator<T> manipulator) {
-		this(manipulator);
+		this(manipulator, range.getComparator());
 		rangeList.add(range);
 	}
 
 	/**
-	 * @param multiple    range
-	 * @param manipulator - utilizzato per incrementare o decrementare il range
+	 * @param multiple
+	 *            range
+	 * @param manipulator
+	 *            - utilizzato per incrementare o decrementare il range
 	 */
-	public RangeUtils(List<Range<T>> range, Manipulator<T> manipulator) {
-		this(manipulator);
+	public RangeUtils(List<Range<T>> range, Manipulator<T> manipulator, Comparator<T> comparator) {
+		this(manipulator, comparator);
 		if (range != null) {
 			for (Range<T> r : range) {
 				if (r != null) {
@@ -55,11 +60,13 @@ public class RangeUtils<T extends Comparable<T>> {
 
 	/**
 	 * @param range
-	 * @param transformer - permette di trasforamre la lista passata in ingresso
-	 * @param manipulator - utilizzato per incrementare o decrementare il range
+	 * @param transformer
+	 *            - permette di trasforamre la lista passata in ingresso
+	 * @param manipulator
+	 *            - utilizzato per incrementare o decrementare il range
 	 */
-	public <X> RangeUtils(List<X> range, Function<X, Range<T>> transformer, Manipulator<T> manipulator) {
-		this(manipulator);
+	public <X> RangeUtils(List<X> range, Function<X, Range<T>> transformer, Manipulator<T> manipulator, Comparator<T> comparator) {
+		this(manipulator, comparator);
 		if (range != null) {
 			for (X r : range) {
 				if (r != null) {
@@ -106,8 +113,7 @@ public class RangeUtils<T extends Comparable<T>> {
 			rangeList.remove(first);
 			if (rangeComp.compare(first.getMinimum(), first.getMaximum()) != 0) {
 				// +1 del minimum
-				Range<T> firstPiuUno = Range.between(manipulator.increase(first.getMinimum()), first.getMaximum(),
-						rangeComp);
+				Range<T> firstPiuUno = Range.between(manipulator.increase(first.getMinimum()), first.getMaximum(), rangeComp);
 				rangeList.add(firstPiuUno);
 			}
 
@@ -136,19 +142,19 @@ public class RangeUtils<T extends Comparable<T>> {
 
 				Range<T> firstPiuUno = Range.between(manipulator.increase(elem), daRimuovere.getMaximum(), rangeComp);
 				Range<T> firstMenoUno = Range.between(daRimuovere.getMinimum(), manipulator.decrease(elem), rangeComp);
-				// se � il primo
+				// se e' il primo
 				if (rangeComp.compare(elem, daRimuovere.getMinimum()) == 0) {
 					rangeList.add(firstPiuUno);
 					return elem;
 				}
 
-				// se � l'ultimo
+				// se e' l'ultimo
 				if (rangeComp.compare(elem, daRimuovere.getMaximum()) == 0) {
 					rangeList.add(firstMenoUno);
 					return elem;
 				}
 
-				// s�nnimmezzo due range
+				// se e' tra i due range
 				rangeList.add(firstPiuUno);
 				rangeList.add(firstMenoUno);
 			}
@@ -160,11 +166,12 @@ public class RangeUtils<T extends Comparable<T>> {
 
 	/**
 	 * @param elem
-	 * @param returnAlternativeValueIfNotAvailable specifica se restituire un valore
-	 *                                             alternativo se l'elem cercato non
-	 *                                             � disponibile
+	 * @param returnAlternativeValueIfNotAvailable
+	 *            specifica se restituire un valore
+	 *            alternativo se l'elem cercato non
+	 *            e' disponibile
 	 * @return
-	 *         <li><code>elem</code> se � disponibile nel range</li>
+	 *         <li><code>elem</code> se e' disponibile nel range</li>
 	 *         <li>altrimenti
 	 *         <ul>
 	 *         <li>se parametro
@@ -185,9 +192,21 @@ public class RangeUtils<T extends Comparable<T>> {
 		return returnAlternativeValueIfNotAvailable ? removeFirstAvailableValue() : null;
 	}
 
+	/**
+	 * @param elem
+	 * @return
+	 *         <ul>
+	 *         <li><code>elem</code> se e' disponibile nel range</li>
+	 *         <li>altrimenti il primo <code>elem</code> disponibile
+	 *         {@link #removeFirstAvailableValue()}</li>
+	 *         </ul>
+	 */
+	public T getElementFromRange(T elem) {
+		return getElementFromRange(elem, true);
+	}
+
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -202,7 +221,7 @@ public class RangeUtils<T extends Comparable<T>> {
 	 * @return
 	 */
 	private Range<T> ricerca(T elem) {
-		Range<T> daTrovare = Range.between(elem, elem);
+		Range<T> daTrovare = Range.between(elem, elem, comparator);
 		Range<T> floor = rangeList.floor(daTrovare);
 		Range<T> ceiling = rangeList.ceiling(daTrovare);
 		if (ceiling != null && ceiling.contains(elem)) {
