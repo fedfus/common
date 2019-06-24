@@ -15,6 +15,11 @@ import com.fedfus.common.range.interfaces.Manipulator;
 import lombok.Getter;
 import lombok.NonNull;
 
+/**
+ * @author federico - Jun 22, 2019
+ *
+ * @param <T>
+ */
 public class RangeBuilder<T> {
 
 	private final T rangeStart;
@@ -35,7 +40,10 @@ public class RangeBuilder<T> {
 	/*****************************************************/
 
 	/**
-	 * 
+	 * @param rangeStart
+	 * @param rangeEnd
+	 * @param manipulator
+	 * @param comparator
 	 */
 	public RangeBuilder(@NonNull T rangeStart, @NonNull T rangeEnd, @NonNull Manipulator<T> manipulator, @NonNull Comparator<T> comparator) {
 		if (comparator.compare(rangeStart, rangeEnd) > 0) {
@@ -147,7 +155,7 @@ public class RangeBuilder<T> {
 	 * @return
 	 */
 	public <X> RangeUtils<X> createRangeUtils(Function<T, X> transformer, Manipulator<X> manipulator, Comparator<X> comparator) {
-		return new RangeUtils<X>(getAvailableRange(transformer, comparator), manipulator, comparator);
+		return new RangeUtils<>(getAvailableRange(transformer, comparator), manipulator, comparator);
 	}
 
 	/**
@@ -156,6 +164,10 @@ public class RangeBuilder<T> {
 	public RangeUtils<T> createRangeUtils() {
 		return new RangeUtils<>(getAvailableRange(), this.manipulator, this.comparator);
 	}
+
+	/*****************************************************/
+	/***************** METODI PRIVATI ********************/
+	/*****************************************************/
 
 	/**
 	 * @return the availableRange

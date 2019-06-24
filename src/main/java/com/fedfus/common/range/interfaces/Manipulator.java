@@ -3,7 +3,7 @@
  */
 package com.fedfus.common.range.interfaces;
 
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * @author F.Fusto - 15 giu 2018
@@ -11,6 +11,7 @@ import java.util.function.Function;
  *         Permette di manipolare un oggetto incrementando o decrementando il
  *         valore
  *
+ * @param <T>
  */
 public interface Manipulator<T> {
 
@@ -33,7 +34,7 @@ public interface Manipulator<T> {
 	 *            function
 	 * @return
 	 */
-	public static <M> Manipulator<M> of(Function<M, M> increase, Function<M, M> decrease) {
+	public static <M> Manipulator<M> of(UnaryOperator<M> increase, UnaryOperator<M> decrease) {
 		return new Manipulator<M>() {
 
 			@Override

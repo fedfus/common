@@ -1,29 +1,30 @@
 package com.fedfus.common.range.utils;
 
-import java.util.Comparator;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.apache.commons.lang3.ObjectUtils;
-
-import com.fedfus.common.range.interfaces.Interval;
-import com.fedfus.common.range.interfaces.Manipulator;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * @author federico - Jun 22, 2019
+ *
+ * @param <N>
+ */
 @Getter
 @RequiredArgsConstructor
-public class NumericInterval<N extends Number & Comparable<N>> implements Interval<N>, Manipulator<N>, Comparator<N> {
+public class NumericInterval<N extends Number & Comparable<N>> implements Intervals<N> {
 
 	@NonNull
 	private N start;
 	@NonNull
 	private N end;
 	@NonNull
-	private Function<N, N> increaser;
+	private UnaryOperator<N> increaser;
 	@NonNull
-	private Function<N, N> decreaser;
+	private UnaryOperator<N> decreaser;
 
 	/*
 	 * (non-Javadoc)

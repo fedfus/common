@@ -24,6 +24,7 @@ public class RangeUtils<T> {
 
 	/**
 	 * @param manipulator
+	 * @param comparator
 	 */
 	private RangeUtils(Manipulator<T> manipulator, Comparator<T> comparator) {
 		this.manipulator = manipulator;
@@ -46,6 +47,7 @@ public class RangeUtils<T> {
 	 *            range
 	 * @param manipulator
 	 *            - utilizzato per incrementare o decrementare il range
+	 * @param comparator
 	 */
 	public RangeUtils(List<Range<T>> range, Manipulator<T> manipulator, Comparator<T> comparator) {
 		this(manipulator, comparator);
@@ -64,6 +66,8 @@ public class RangeUtils<T> {
 	 *            - permette di trasforamre la lista passata in ingresso
 	 * @param manipulator
 	 *            - utilizzato per incrementare o decrementare il range
+	 * 
+	 * @param comparator
 	 */
 	public <X> RangeUtils(List<X> range, Function<X, Range<T>> transformer, Manipulator<T> manipulator, Comparator<T> comparator) {
 		this(manipulator, comparator);

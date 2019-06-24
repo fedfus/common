@@ -1,16 +1,28 @@
 package com.fedfus.common.range.utils;
 
 import java.util.Comparator;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.apache.commons.lang3.ObjectUtils;
 
 import com.fedfus.common.range.interfaces.Interval;
 import com.fedfus.common.range.interfaces.Manipulator;
 
-public abstract class Intervals<T> implements Interval<T>, Manipulator<T>, Comparator<T> {
+/**
+ * @author federico - Jun 22, 2019
+ *
+ * @param <T>
+ */
+public interface Intervals<T> extends Interval<T>, Manipulator<T>, Comparator<T> {
 
-	public static <I extends Comparable<I>> Intervals<I> of(I start, I end, Function<I, I> increase, Function<I, I> decrease) {
+	/**
+	 * @param start
+	 * @param end
+	 * @param increase
+	 * @param decrease
+	 * @return
+	 */
+	public static <I extends Comparable<I>> Intervals<I> of(I start, I end, UnaryOperator<I> increase, UnaryOperator<I> decrease) {
 		return new Intervals<I>() {
 
 			@Override

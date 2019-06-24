@@ -25,16 +25,18 @@ public class LazyInitMap<K, V> extends AbstractMapDecorator<K, V> implements Ser
 	 * 
 	 */
 	private static final long serialVersionUID = 3106037526354302971L;
-	private Supplier<? extends Map<K, V>> factory;
+	private transient Supplier<? extends Map<K, V>> factory;
 
 	@SuppressWarnings("unchecked")
-	private volatile Map<K, V> map = NO_INIT;
+	private transient Map<K, V> mapz = NO_INIT;
 
 	// -----------------------------------------------------------------------
 
 	/**
-	 * @param factory the factory to use, must not be null
-	 * @throws NullPointerException if map or factory is null
+	 * @param factory
+	 *            the factory to use, must not be null
+	 * @throws NullPointerException
+	 *             if map or factory is null
 	 */
 	public LazyInitMap(@NonNull final Supplier<? extends Map<K, V>> factory) {
 		super();
@@ -46,19 +48,18 @@ public class LazyInitMap<K, V> extends AbstractMapDecorator<K, V> implements Ser
 	/*
 	 * inizializzazione al primo accesso alla mappa tramite Supplier definito da
 	 * costruttore (non-Javadoc)
-	 * 
 	 * @see org.apache.commons.collections4.map.AbstractMapDecorator#decorated()
 	 */
 	@Override
 	protected Map<K, V> decorated() {
 		// use a temporary variable to reduce the number of reads of the volatile field
-		Map<K, V> result = map;
+		Map<K, V> result = mapz;
 		if (result == NO_INIT) {
 			synchronized (this) {
 				// effettuo un ulteriore controllo
-				result = map;
+				result = mapz;
 				if (result == NO_INIT) {
-					map = result = factory.get();
+					mapz = result = factory.get();
 				}
 			}
 		}
@@ -83,7 +84,7 @@ public class LazyInitMap<K, V> extends AbstractMapDecorator<K, V> implements Ser
 	@SuppressWarnings("unchecked")
 	private void reload() {
 		synchronized (this) {
-			map = NO_INIT;
+			mapz = NO_INIT;
 		}
 	}
 
@@ -103,6 +104,15 @@ public class LazyInitMap<K, V> extends AbstractMapDecorator<K, V> implements Ser
 			reload();
 		}
 		return getMap();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.apache.commons.collections4.map.AbstractMapDecorator#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object object) {
+		return super.equals(object);
 	}
 
 }

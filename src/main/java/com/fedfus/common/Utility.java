@@ -10,10 +10,14 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fedfus.common.numbers.NumberUtils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * @author F.Fusto
  *
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Utility {
 
 	/**
@@ -78,7 +82,7 @@ public class Utility {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <O extends Number> O defaultIfNull(String input, O defaultValue, Class<O> returnClass) {
-		return (O) defaultIfNull(StringUtils.trimToNull(input), (in) -> {
+		return (O) defaultIfNull(StringUtils.trimToNull(input), in -> {
 			if (StringUtils.isNumeric(in)) {
 				try {
 					return NumberUtils.convertNumberToTargetClass(NumberFormat.getInstance().parse(in), returnClass);

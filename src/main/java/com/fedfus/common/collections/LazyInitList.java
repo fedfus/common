@@ -19,7 +19,7 @@ public class LazyInitList<E> extends AbstractSerializableListDecorator<E> {
 	@SuppressWarnings("rawtypes")
 	private static final List NO_INIT = Collections.emptyList();
 
-	private final Supplier<? extends List<E>> supplier;
+	private final transient Supplier<? extends List<E>> supplier;
 
 	@SuppressWarnings("unchecked")
 	public LazyInitList(@NonNull Supplier<? extends List<E>> supplier) {
@@ -56,6 +56,15 @@ public class LazyInitList<E> extends AbstractSerializableListDecorator<E> {
 	@SuppressWarnings("unchecked")
 	public final void reload() {
 		super.setCollection(NO_INIT);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.apache.commons.collections4.list.AbstractListDecorator#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object object) {
+		return super.equals(object);
 	}
 
 }

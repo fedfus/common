@@ -80,4 +80,13 @@ public class RangeDTO<T> implements Comparable<T> {
 	public String toString() {
 		return this.rangeStart + " -> " + this.rangeEnd;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
 }

@@ -73,16 +73,13 @@ public class AnnotationsUtils {
 	public static <T extends Annotation> boolean injectParameter(Object mainClass, Class<T> annotation, Function<T, String> paramNameExtractor, BiFunction<String, Field, ?> valueExtractor, Predicate<T> replaceIfNotNull, Predicate<T> injectNullValue, Predicate<T> injectEmptyValue) {
 		for (Field field : getAnnotatedField(mainClass.getClass(), annotation)) {
 			T parametro = field.getAnnotation(annotation);
-			if (!replaceIfNotNull.test(parametro) && defaultValueExtractor.apply(field, mainClass) != null) {
-				continue;
+			if (!(!replaceIfNotNull.test(parametro) && defaultValueExtractor.apply(field, mainClass) != null)) {
+				String paramName = paramNameExtractor.apply(parametro);
+				Object value = valueExtractor.apply(paramName, field);
+				if (!((value == null && !injectNullValue.test(parametro)) || (!injectEmptyValue.test(parametro) && emptyValueChecker.test(value)))) {
+					injectParameter(mainClass, field, value);
+				}
 			}
-			String paramName = paramNameExtractor.apply(parametro);
-			Object value = valueExtractor.apply(paramName, field);
-			if ((value == null && !injectNullValue.test(parametro)) || (!injectEmptyValue.test(parametro) && emptyValueChecker.test(value))) {
-				// se il valore è null o è vuoto
-				continue;
-			}
-			injectParameter(mainClass, field, value);
 		}
 		return true;
 	}
@@ -159,14 +156,14 @@ public class AnnotationsUtils {
 	 * @param class1
 	 * @param object
 	 */
-	public static <T extends Annotation> Map<String, ?> getParameterValuesFromAnnotation(Object mainClass, Class<T> annotation, Function<T, String> paramNameExtractor, Predicate<T> filter, BiFunction<Field, Object, ?> valueExtractor) {
-		Map<String, Object> values = new HashMap<>();
+	public static <T extends Annotation, V> Map<String, V> getParameterValuesFromAnnotation(Object mainClass, Class<T> annotation, Function<T, String> paramNameExtractor, Predicate<T> filter, BiFunction<Field, Object, V> valueExtractor) {
+		Map<String, V> values = new HashMap<>();
 		getAnnotatedField(mainClass.getClass(), annotation).forEach(field -> {
 			T parametro = field.getAnnotation(annotation);
 			if (filter.test(parametro)) {
 				String paramName = paramNameExtractor.apply(parametro);
 				field.setAccessible(true);
-				Object value = valueExtractor.apply(field, mainClass);
+				V value = valueExtractor.apply(field, mainClass);
 				values.put(paramName, value);
 			}
 		});
@@ -203,16 +200,6 @@ public class AnnotationsUtils {
 		Object retValue = null;
 		if (Number.class.isAssignableFrom(fieldType)) {
 			retValue = NumberUtils.convertNumberToTargetClass(new BigDecimal(trimmedArgument), fieldType);
-			// } else if (CodiceEnum.class.isAssignableFrom(fieldType)) {
-			// for (Class<?> t : fieldType.getInterfaces()) {
-			// if (t.getName().equals(CodiceEnum.class.getName())) {
-			// Class<?> enumTypeParameterClass = t.getTypeParameters()[0].getClass();
-			// @SuppressWarnings("unchecked")
-			// Class<CodiceEnum<?>> clazzEn = (Class<CodiceEnum<?>>) fieldType;
-			// retValue = CodiceEnum.enumValueFromCodice(getValueFromArgument(trimmedArgument, enumTypeParameterClass), clazzEn);
-			// break;
-			// }
-			// }
 		} else {
 			retValue = trimmedArgument;
 		}

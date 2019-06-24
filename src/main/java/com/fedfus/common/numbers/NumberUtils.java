@@ -5,6 +5,10 @@ import java.math.BigInteger;
 
 import org.apache.commons.lang3.ObjectUtils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class NumberUtils {
 
 	/**
@@ -26,7 +30,7 @@ public class NumberUtils {
 	 * @return
 	 * @throws IllegalArgumentException
 	 */
-	public static Number convertNumberToTargetClass(Number number, Class<?> targetClass) throws IllegalArgumentException {
+	public static Number convertNumberToTargetClass(Number number, Class<?> targetClass) {
 		if (targetClass == null || targetClass.isInstance(number)) {
 			return number;
 		} else if (targetClass.equals(Byte.class)) {

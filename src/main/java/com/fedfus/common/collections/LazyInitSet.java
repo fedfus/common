@@ -21,7 +21,7 @@ public class LazyInitSet<E> extends AbstractSetDecorator<E> implements Serializa
 	@SuppressWarnings("rawtypes")
 	private static final Set NO_INIT = Collections.emptySet();
 
-	private final Supplier<? extends Set<E>> supplier;
+	private final transient Supplier<? extends Set<E>> supplier;
 
 	@SuppressWarnings("unchecked")
 	public LazyInitSet(@NonNull Supplier<? extends Set<E>> supplier) {
@@ -58,6 +58,15 @@ public class LazyInitSet<E> extends AbstractSetDecorator<E> implements Serializa
 	@SuppressWarnings("unchecked")
 	public final void reload() {
 		super.setCollection(NO_INIT);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.apache.commons.collections4.set.AbstractSetDecorator#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object object) {
+		return super.equals(object);
 	}
 
 }

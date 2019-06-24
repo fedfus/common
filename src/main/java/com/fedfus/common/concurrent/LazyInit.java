@@ -8,6 +8,7 @@ package com.fedfus.common.concurrent;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 
 import lombok.Getter;
 
@@ -17,7 +18,7 @@ import lombok.Getter;
  *         7 giu 2019
  * 
  */
-public class LazyInitializer<T> extends org.apache.commons.lang3.concurrent.LazyInitializer<T> {
+public class LazyInit<T> extends LazyInitializer<T> {
 
 	@Getter
 	private volatile boolean initialized = false;
@@ -26,7 +27,7 @@ public class LazyInitializer<T> extends org.apache.commons.lang3.concurrent.Lazy
 	/**
 	 * 
 	 */
-	public LazyInitializer(Supplier<T> initializer) {
+	public LazyInit(Supplier<T> initializer) {
 		this.initSupplier = initializer;
 	}
 

@@ -22,6 +22,7 @@ public class AnnotationTests {
 		test = new TestAnnotata();
 		argomenti = new HashMap<>();
 		argomenti.put("prova", "valore1");
+		argomenti.put("provaNoNull", null);
 		argumentsValueExtractor = argList -> (paramName, field) -> AnnotationsUtils.getValueFromArgument(argList.get(paramName), field.getType());
 	}
 
@@ -34,5 +35,6 @@ public class AnnotationTests {
 	public void testInjection() {
 		AnnotationsUtils.injectParameter(test, ArgomentoInIngresso.class, ArgomentoInIngresso::value, argumentsValueExtractor.apply(this.argomenti), ArgomentoInIngresso::replaceIfNotNull, ArgomentoInIngresso::injectNullValue, ArgomentoInIngresso::injectEmptyValue);
 		Assertions.assertEquals("valore1", test.getProvaAnnotazione());
+		Assertions.assertNotNull(test.getProvaAnnotazioneNoNull());
 	}
 }
