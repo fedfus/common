@@ -1,24 +1,22 @@
 package com.fedfus.common.range;
 
+import com.fedfus.common.range.dto.RangeDTO;
+import com.fedfus.common.range.interfaces.Interval;
+import com.fedfus.common.range.interfaces.Manipulator;
+import lombok.Getter;
+import lombok.NonNull;
+import org.apache.commons.lang3.Range;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.Range;
-
-import com.fedfus.common.range.dto.RangeDTO;
-import com.fedfus.common.range.interfaces.Interval;
-import com.fedfus.common.range.interfaces.Manipulator;
-
-import lombok.Getter;
-import lombok.NonNull;
-
 /**
- * @author federico - Jun 22, 2019
- *
  * @param <T>
+ *
+ * @author federico - Jun 22, 2019
  */
 public class RangeBuilder<T> {
 
@@ -35,17 +33,22 @@ public class RangeBuilder<T> {
 	@Getter
 	private Comparator<T> comparator;
 
-	/*****************************************************/
-	/******************** COSTRUTTORE ********************/
-	/*****************************************************/
+	///////////////////////////////////////////////////////
+	///////////////////// COSTRUTTORE /////////////////////
+	///////////////////////////////////////////////////////
 
 	/**
 	 * @param rangeStart
+	 * 		range start
 	 * @param rangeEnd
+	 * 		range end
 	 * @param manipulator
+	 * 		manipulator
 	 * @param comparator
+	 * 		comparator
 	 */
-	public RangeBuilder(@NonNull T rangeStart, @NonNull T rangeEnd, @NonNull Manipulator<T> manipulator, @NonNull Comparator<T> comparator) {
+	public RangeBuilder(@NonNull T rangeStart, @NonNull T rangeEnd, @NonNull Manipulator<T> manipulator,
+			@NonNull Comparator<T> comparator) {
 		if (comparator.compare(rangeStart, rangeEnd) > 0) {
 			throw new IllegalArgumentException("rangeStart must be lower or equals than rangeEnd");
 		}
@@ -60,7 +63,9 @@ public class RangeBuilder<T> {
 
 	/**
 	 * @param interval
+	 * 		interval
 	 * @param manipulator
+	 * 		manipulator
 	 */
 	public RangeBuilder(Interval<T> interval, Manipulator<T> manipulator, Comparator<T> comparator) {
 		this(interval.getStart(), interval.getEnd(), manipulator, comparator);
@@ -68,18 +73,22 @@ public class RangeBuilder<T> {
 
 	/**
 	 * @param interval
+	 * 		interval
 	 */
 	public <I extends Interval<T> & Manipulator<T> & Comparator<T>> RangeBuilder(I interval) {
 		this(interval, interval, interval);
 	}
 
-	/*****************************************************/
-	/***************** METODI PUBBLICI *******************/
-	/*****************************************************/
+	///////////////////////////////////////////////////////
+	////////////////// METODI PUBBLICI ////////////////////
+	///////////////////////////////////////////////////////
 
 	/**
 	 * @param item
+	 * 		item
+	 *
 	 * @throws Exception
+	 * 		exception
 	 */
 	public void addItem(T item) {
 		if (item != null) {
@@ -106,7 +115,9 @@ public class RangeBuilder<T> {
 
 	/**
 	 * @param item
+	 * 		item
 	 * @param function
+	 * 		function
 	 */
 	public <X> void addItem(X item, Function<X, T> function) {
 		addItem(function.apply(item));
@@ -114,6 +125,7 @@ public class RangeBuilder<T> {
 
 	/**
 	 * @param items
+	 * 		items
 	 */
 	public void addItems(List<T> items) {
 		for (T item : items) {
@@ -123,7 +135,9 @@ public class RangeBuilder<T> {
 
 	/**
 	 * @param items
+	 * 		items
 	 * @param function
+	 * 		function
 	 */
 	public <X> void addItems(List<X> items, Function<X, T> function) {
 		for (X item : items) {
@@ -133,16 +147,18 @@ public class RangeBuilder<T> {
 
 	/**
 	 * @param transformer
-	 * @return
+	 * 		transformer
+	 *
+	 * @return available range
 	 */
 	public <X> List<Range<X>> getAvailableRange(Function<T, X> transformer, Comparator<X> comparator) {
-		return getAvailableRangeDTO().stream()
-									 .map(rdto -> Range.between(transformer.apply(rdto.getRangeStart()), transformer.apply(rdto.getRangeEnd()), comparator))
-									 .collect(Collectors.toList());
+		return getAvailableRangeDTO().stream().map(rdto -> Range
+				.between(transformer.apply(rdto.getRangeStart()), transformer.apply(rdto.getRangeEnd()), comparator))
+				.collect(Collectors.toList());
 	}
 
 	/**
-	 * @return
+	 * @return available range
 	 */
 	public List<Range<T>> getAvailableRange() {
 		return getAvailableRange(Function.identity(), comparator);
@@ -150,24 +166,29 @@ public class RangeBuilder<T> {
 
 	/**
 	 * @param transformer
+	 * 		transformer
 	 * @param manipulator
+	 * 		manipulator
 	 * @param comparator
-	 * @return
+	 * 		comparator
+	 *
+	 * @return range
 	 */
-	public <X> RangeUtils<X> createRangeUtils(Function<T, X> transformer, Manipulator<X> manipulator, Comparator<X> comparator) {
+	public <X> RangeUtils<X> createRangeUtils(Function<T, X> transformer, Manipulator<X> manipulator,
+			Comparator<X> comparator) {
 		return new RangeUtils<>(getAvailableRange(transformer, comparator), manipulator, comparator);
 	}
 
 	/**
-	 * @return
+	 * @return range utils
 	 */
 	public RangeUtils<T> createRangeUtils() {
 		return new RangeUtils<>(getAvailableRange(), this.manipulator, this.comparator);
 	}
 
-	/*****************************************************/
-	/***************** METODI PRIVATI ********************/
-	/*****************************************************/
+	///////////////////////////////////////////////////////
+	////////////////// METODI PRIVATI /////////////////////
+	///////////////////////////////////////////////////////
 
 	/**
 	 * @return the availableRange

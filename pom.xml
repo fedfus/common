@@ -7,7 +7,7 @@
 
 	<groupId>com.fedfus</groupId>
 	<artifactId>com.fedfus.common</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0</version>
 
 	<name>com.fedfus.common</name>
 	<url>https://github.com/fedfus/common</url>
